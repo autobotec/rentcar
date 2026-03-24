@@ -1,0 +1,219 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String?
+  name         String?
+  phone        String?
+  country      String?
+  language     String   @default("es")
+  role         String   @default("customer")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  reservations Reservation[]
+  reviews      Review[]
+}
+
+model Location {
+  id        String   @id @default(uuid())
+  name      String
+  type      String // city/airport/hotel/branch
+  code      String? @unique
+  country   String   @default("Dominican Republic")
+  region    String?
+  address   String?
+  latitude  Float?
+  longitude Float?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  vehicles            Vehicle[]
+  seasons             Season[]
+  pickupReservations  Reservation[] @relation("PickupLocation")
+  dropoffReservations Reservation[] @relation("DropoffLocation")
+  seoPages            SeoPage[]
+}
+
+model Vehicle {
+  id              String   @id @default(uuid())
+  locationId      String?
+  brand           String
+  model           String
+  year            Int?
+  transmission    String // manual/automatic
+  fuelType        String // gasoline/diesel/hybrid/electric
+  capacity        Int
+  doors           Int?
+  airConditioning Boolean  @default(true)
+  luggage         Int?
+  basePricePerDay Float
+  currency        String   @default("USD")
+  status          String   @default("available") // available/reserved/maintenance
+  description     String?
+  engine          String?  // ej. 4.0, 2.0
+  driveType       String?  // ej. 4X4, 4X2
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  location       Location?             @relation(fields: [locationId], references: [id])
+  images         VehicleImage[]
+  prices         Price[]
+  reservations   Reservation[]
+  translations   VehicleTranslation[]
+}
+
+model VehicleTranslation {
+  id          String   @id @default(uuid())
+  vehicleId   String
+  vehicle     Vehicle  @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  locale      String   // es | en | fr
+  brand       String
+  model       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([vehicleId, locale])
+}
+
+model VehicleImage {
+  id         String  @id @default(uuid())
+  vehicleId  String
+  url        String
+  isPrimary  Boolean @default(false)
+  orderIndex Int     @default(0)
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model Season {
+  id         String   @id @default(uuid())
+  name       String
+  startDate  DateTime
+  endDate    DateTime
+  locationId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  location Location? @relation(fields: [locationId], references: [id])
+  prices   Price[]
+}
+
+model Price {
+  id         String   @id @default(uuid())
+  vehicleId  String
+  seasonId   String?
+  dailyPrice Float
+  currency   String   @default("USD")
+  minDays    Int      @default(1)
+  maxDays    Int?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  season  Season? @relation(fields: [seasonId], references: [id])
+}
+
+model Extra {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  pricePerDay Float?
+  priceType   String  @default("per_day") // per_day/fixed
+  currency    String  @default("USD")
+  isActive    Boolean @default(true)
+
+  reservationExtras ReservationExtra[]
+}
+
+model Reservation {
+  id                String   @id @default(uuid())
+  userId            String
+  vehicleId         String
+  pickupLocationId  String
+  dropoffLocationId String
+  pickupDatetime    DateTime
+  dropoffDatetime   DateTime
+  status            String   @default("pending")
+  totalPrice        Float
+  currency          String   @default("USD")
+  paymentStatus     String   @default("pending")
+  paymentMode       String   @default("full")
+  reservationNumber String   @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  checkinAt         DateTime?
+  checkoutAt        DateTime?
+
+  user            User               @relation(fields: [userId], references: [id])
+  vehicle         Vehicle            @relation(fields: [vehicleId], references: [id])
+  pickupLocation  Location           @relation("PickupLocation", fields: [pickupLocationId], references: [id])
+  dropoffLocation Location           @relation("DropoffLocation", fields: [dropoffLocationId], references: [id])
+  extras          ReservationExtra[]
+  payments        Payment[]
+  review          Review?
+}
+
+model ReservationExtra {
+  id            String @id @default(uuid())
+  reservationId String
+  extraId       String
+  quantity      Int    @default(1)
+  price         Float
+  currency      String @default("USD")
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  extra       Extra       @relation(fields: [extraId], references: [id])
+}
+
+model Payment {
+  id                String   @id @default(uuid())
+  reservationId     String
+  provider          String // stripe/paypal/azul
+  providerPaymentId String
+  amount            Float
+  currency          String
+  status            String // pending/succeeded/failed/refunded
+  type              String // full/deposit/balance
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id            String   @id @default(uuid())
+  reservationId String   @unique
+  userId        String
+  rating        Int
+  comment       String?
+  createdAt     DateTime @default(now())
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id])
+}
+
+model SeoPage {
+  id              String   @id @default(uuid())
+  slug            String   @unique
+  title           String
+  h1              String
+  metaDescription String?
+  contentHtml     String?
+  type            String // city/airport/vehicle-type/blog
+  locationId      String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  location Location? @relation(fields: [locationId], references: [id])
+}

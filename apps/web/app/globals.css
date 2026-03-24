@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+/* Logo EsAnibal: carmesí y negro */
+:root {
+  --logo-crimson: #b91c1c;
+  --logo-crimson-dark: #991b1b;
+  --logo-black: #0a0a0a;
+}
+
+/* Paleta caribeña: turquesa, coral, arena, carmesí */
+:root {
+  --caribbean-teal: #0d9488;
+  --caribbean-teal-light: #14b8a6;
+  --caribbean-coral: #ea580c;
+  --caribbean-crimson: #b91c1c;
+  --caribbean-sand: #fef3c7;
+  --caribbean-ocean: #0e7490;
+  --caribbean-lime: #65a30d;
+}

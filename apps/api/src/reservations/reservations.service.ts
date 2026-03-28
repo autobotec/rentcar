@@ -24,6 +24,16 @@ type StartPaymentInput = {
 export class ReservationsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  /** Acepta UUID interno o publicCode (MARCA-MODELO-######). */
+  private async findVehicleByIdOrPublicCode(vehicleIdOrCode: string, withLocation: boolean) {
+    return this.prisma.vehicle.findFirst({
+      where: {
+        OR: [{ id: vehicleIdOrCode }, { publicCode: vehicleIdOrCode }],
+      },
+      ...(withLocation ? { include: { location: true } } : {}),
+    })
+  }
+
   private getNights(pickup: Date, dropoff: Date): number {
     const ms = dropoff.getTime() - pickup.getTime()
     const days = Math.ceil(ms / (1000 * 60 * 60 * 24))
@@ -51,9 +61,7 @@ export class ReservationsService {
   }
 
   async quote(input: QuoteInput) {
-    const vehicle = await this.prisma.vehicle.findUnique({
-      where: { id: input.vehicleId },
-    })
+    const vehicle = await this.findVehicleByIdOrPublicCode(input.vehicleId, false)
     if (!vehicle) {
       throw new BadRequestException('Vehículo no encontrado')
     }
@@ -106,10 +114,7 @@ export class ReservationsService {
   }
 
   async create(input: CreateReservationInput) {
-    const vehicle = await this.prisma.vehicle.findUnique({
-      where: { id: input.vehicleId },
-      include: { location: true },
-    })
+    const vehicle = await this.findVehicleByIdOrPublicCode(input.vehicleId, true)
     if (!vehicle || !vehicle.locationId) {
       throw new BadRequestException('Vehículo o ubicación inválida')
     }

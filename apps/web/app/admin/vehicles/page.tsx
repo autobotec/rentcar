@@ -48,7 +48,7 @@ export default async function AdminVehiclesPage() {
                 </td>
               </tr>
             ) : (
-              vehicles.map((v: { id: string; brand: string; model: string; year?: number | null; location?: { name: string } | null; basePricePerDay: number; currency: string; status: string }) => (
+              vehicles.map((v: { id: string; publicCode?: string | null; brand: string; model: string; year?: number | null; location?: { name: string } | null; basePricePerDay: number; currency: string; status: string }) => (
                 <tr key={v.id} className="hover:bg-slate-50">
                   <td className="px-4 py-3">
                     <span className="font-medium text-slate-900">
@@ -79,7 +79,7 @@ export default async function AdminVehiclesPage() {
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Link
-                      href={`/admin/vehicles/${v.id}`}
+                      href={`/admin/vehicles/${encodeURIComponent(v.publicCode || v.id)}`}
                       className="text-sm font-medium text-teal-600 hover:text-teal-800"
                     >
                       Editar

@@ -13,9 +13,23 @@ export default function middleware(request: NextRequest) {
     const rest = localeAdminMatch[2] ?? ""
     return NextResponse.redirect(new URL(`/admin${rest}`, request.url))
   }
+
+  // Panel admin (sin prefijo de idioma): exigir cookie antes de next-intl
+  if (pathname.startsWith("/admin")) {
+    const isLogin = pathname === "/admin/login"
+    const session = request.cookies.get("admin_session")?.value
+    if (!isLogin && !session) {
+      const login = new URL("/admin/login", request.url)
+      login.searchParams.set("from", pathname)
+      return NextResponse.redirect(login)
+    }
+    return NextResponse.next()
+  }
+
   return intlMiddleware(request)
 }
 
 export const config = {
-  matcher: ["/((?!api|admin|_next|_vercel|.*\\..*).*)"],
+  // Incluir /admin para poder validar sesión; excluir estáticos y API
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
 }

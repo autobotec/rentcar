@@ -7,7 +7,7 @@
     "noImage": "No image",
     "admin": "Admin",
     "myReservations": "My reservations",
-    "fleet": "Fleet",
+    "fleet": "Vehicles",
     "locations": "Locations",
     "contact": "Contact",
     "language": "Language"
@@ -118,5 +118,31 @@
     "noResults": "No vehicles available for the selected criteria.",
     "tryOther": "Try different dates, location or remove filters.",
     "newSearch": "New search"
+  },
+  "contactPage": {
+    "title": "Contact us",
+    "intro": "Fill in the form and we will get back to you as soon as possible.",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone (optional)",
+    "message": "Message",
+    "submit": "Send message",
+    "sending": "Sending…",
+    "success": "Thank you. We have received your message.",
+    "validationName": "Please enter your name.",
+    "validationEmail": "Please enter a valid email address.",
+    "validationMessage": "Please write your message.",
+    "sendFailed": "Could not send. Please try again."
+  },
+  "footer": {
+    "offices": "Offices",
+    "santoDomingo": "352 Abraham Lincoln Ave., Piantini, Santo Domingo 10148",
+    "laRomana": "18 Restauración St., downtown, La Romana 22000",
+    "phoneLabel": "Phone",
+    "phoneValue": "+1 (809) 555-0188",
+    "phoneNote": "Sample number (not a real line).",
+    "contactForm": "Contact form",
+    "whatsapp": "WhatsApp",
+    "whatsappHint": "To show the green button, set WHATSAPP_PHONE=18095550123 in apps/web/.env (or NEXT_PUBLIC_WHATSAPP_PHONE) and restart the dev server."
   }
 }

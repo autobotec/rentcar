@@ -4,6 +4,17 @@ import { translateVehicleTexts } from './translate'
 
 const LOCALES = ['es', 'en', 'fr'] as const
 
+/** Normaliza texto para el prefijo del código público (MARCA-MODELO-123456). */
+function slugPart(s: string): string {
+  const n = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const raw = n
+    .replace(/[^a-zA-Z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .toUpperCase()
+    .slice(0, 40)
+  return raw || 'X'
+}
+
 interface FindAllParams {
   locationId?: string
   locationCode?: string
@@ -50,6 +61,47 @@ export type UpdateVehicleDto = Partial<CreateVehicleDto>
 @Injectable()
 export class VehiclesService {
   constructor(private readonly prisma: PrismaService) {}
+
+  /** Genera un código único MARCA-MODELO-###### (6 dígitos). */
+  private async allocateUniquePublicCode(
+    brand: string,
+    model: string,
+    excludeVehicleId?: string,
+  ): Promise<string> {
+    const prefix = `${slugPart(brand)}-${slugPart(model)}`
+    for (let attempt = 0; attempt < 80; attempt++) {
+      const num = String(Math.floor(100000 + Math.random() * 900000))
+      const code = `${prefix}-${num}`
+      const clash = await this.prisma.vehicle.findFirst({
+        where: {
+          publicCode: code,
+          ...(excludeVehicleId ? { NOT: { id: excludeVehicleId } } : {}),
+        },
+      })
+      if (!clash) return code
+    }
+    const fallback = `${prefix}-${Date.now().toString().slice(-6)}`
+    const clash = await this.prisma.vehicle.findFirst({
+      where: {
+        publicCode: fallback,
+        ...(excludeVehicleId ? { NOT: { id: excludeVehicleId } } : {}),
+      },
+    })
+    if (!clash) return fallback
+    return `${prefix}-${String(Math.floor(100000 + Math.random() * 900000))}`
+  }
+
+  private async resolveVehicleRecord(idOrCode: string) {
+    const vehicle = await this.prisma.vehicle.findFirst({
+      where: {
+        OR: [{ id: idOrCode }, { publicCode: idOrCode }],
+      },
+    })
+    if (!vehicle) {
+      throw new NotFoundException('Vehículo no encontrado')
+    }
+    return vehicle
+  }
 
   async findAll(params: FindAllParams) {
     const where: any = {}
@@ -159,9 +211,11 @@ export class VehiclesService {
     })
   }
 
-  async findOne(id: string, locale?: string) {
-    const vehicle = await this.prisma.vehicle.findUnique({
-      where: { id },
+  async findOne(idOrCode: string, locale?: string) {
+    const vehicle = await this.prisma.vehicle.findFirst({
+      where: {
+        OR: [{ id: idOrCode }, { publicCode: idOrCode }],
+      },
       include: {
         images: true,
         location: true,
@@ -183,11 +237,15 @@ export class VehiclesService {
     if (!dto.brand?.trim() || !dto.model?.trim()) {
       throw new BadRequestException('Marca y modelo son obligatorios')
     }
+    const brand = dto.brand.trim()
+    const model = dto.model.trim()
+    const publicCode = await this.allocateUniquePublicCode(brand, model)
     const vehicle = await this.prisma.vehicle.create({
       data: {
+        publicCode,
         locationId: dto.locationId || null,
-        brand: dto.brand.trim(),
-        model: dto.model.trim(),
+        brand,
+        model,
         year: dto.year ?? null,
         transmission: dto.transmission || 'automatic',
         fuelType: dto.fuelType || 'gasoline',
@@ -208,12 +266,22 @@ export class VehiclesService {
     return vehicle
   }
 
-  async update(id: string, dto: UpdateVehicleDto) {
-    const current = await this.prisma.vehicle.findUnique({ where: { id } })
-    if (!current) throw new NotFoundException('Vehículo no encontrado')
+  async update(idOrCode: string, dto: UpdateVehicleDto) {
+    const current = await this.resolveVehicleRecord(idOrCode)
+    const id = current.id
+    const nextBrand = dto.brand !== undefined ? dto.brand.trim() : current.brand
+    const nextModel = dto.model !== undefined ? dto.model.trim() : current.model
+    const brandModelChanged =
+      (dto.brand !== undefined && nextBrand !== current.brand) ||
+      (dto.model !== undefined && nextModel !== current.model)
+    const nextPublicCode = brandModelChanged
+      ? await this.allocateUniquePublicCode(nextBrand, nextModel, id)
+      : undefined
+
     const vehicle = await this.prisma.vehicle.update({
       where: { id },
       data: {
+        ...(nextPublicCode !== undefined && { publicCode: nextPublicCode }),
         ...(dto.locationId !== undefined && { locationId: dto.locationId || null }),
         ...(dto.brand !== undefined && { brand: dto.brand.trim() }),
         ...(dto.model !== undefined && { model: dto.model.trim() }),
@@ -273,14 +341,15 @@ export class VehiclesService {
     }
   }
 
-  async remove(id: string) {
-    await this.findOne(id)
-    await this.prisma.vehicle.delete({ where: { id } })
+  async remove(idOrCode: string) {
+    const v = await this.resolveVehicleRecord(idOrCode)
+    await this.prisma.vehicle.delete({ where: { id: v.id } })
     return { deleted: true }
   }
 
-  async addImage(vehicleId: string, url: string, isPrimary?: boolean) {
-    await this.findOne(vehicleId)
+  async addImage(vehicleIdOrCode: string, url: string, isPrimary?: boolean) {
+    const v = await this.resolveVehicleRecord(vehicleIdOrCode)
+    const vehicleId = v.id
     const count = await this.prisma.vehicleImage.count({ where: { vehicleId } })
     if (count >= 10) {
       throw new BadRequestException('Máximo 10 fotos por vehículo.')
@@ -295,7 +364,9 @@ export class VehiclesService {
     })
   }
 
-  async removeImage(vehicleId: string, imageId: string) {
+  async removeImage(vehicleIdOrCode: string, imageId: string) {
+    const v = await this.resolveVehicleRecord(vehicleIdOrCode)
+    const vehicleId = v.id
     const image = await this.prisma.vehicleImage.findFirst({
       where: { id: imageId, vehicleId },
     })

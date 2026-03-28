@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className="min-h-screen text-slate-900" style={{ backgroundColor: "#f8fafc" }}>
+      <body className="min-h-screen bg-zinc-200 text-slate-900">
         <LocalBusinessJsonLd />
         {children}
       </body>

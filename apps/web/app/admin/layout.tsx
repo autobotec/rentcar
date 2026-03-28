@@ -19,7 +19,7 @@ export default async function AdminLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-    <div className="min-h-screen bg-slate-100">
+    <div className="flex min-h-screen flex-col bg-slate-100">
       <header className="border-b bg-white shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-6">
@@ -36,6 +36,9 @@ export default async function AdminLayout({
               <Link href="/admin/reservations" className="text-slate-600 hover:text-slate-900">
                 Reservas
               </Link>
+              <Link href="/admin/locations" className="text-slate-600 hover:text-slate-900">
+                Ubicaciones
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-4">
@@ -51,7 +54,20 @@ export default async function AdminLayout({
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
+      <footer className="mt-auto bg-gradient-to-t from-black via-zinc-950 to-zinc-900 px-4 py-4 text-center text-sm text-slate-400">
+        <p>
+          Design by:{" "}
+          <a
+            href="https://autobotec.net"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-semibold text-teal-400 underline-offset-2 hover:text-teal-300 hover:underline"
+          >
+            autobotec.net
+          </a>
+        </p>
+      </footer>
     </div>
     </NextIntlClientProvider>
   )

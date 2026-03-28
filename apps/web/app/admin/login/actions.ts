@@ -2,6 +2,18 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
+import { routing } from "../../../i18n/routing"
+
+const ADMIN_SESSION = "admin_session"
+
+function adminSessionOpts() {
+  return {
+    path: "/" as const,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax" as const,
+  }
+}
 
 function loginRedirect(from: string, error: string) {
   const q = new URLSearchParams({ error })
@@ -17,18 +29,23 @@ export async function login(formData: FormData) {
   if (!password) loginRedirect(from, "empty")
   if (password !== expected) loginRedirect(from, "invalid")
   const store = await cookies()
-  store.set("admin_session", "1", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+  store.set(ADMIN_SESSION, "1", {
+    ...adminSessionOpts(),
     maxAge: 60 * 60 * 24 * 7,
-    path: "/",
   })
   redirect(from.startsWith("/admin") ? from : "/admin")
 }
 
 export async function logout() {
   const store = await cookies()
-  store.delete("admin_session")
-  redirect("/admin/login")
+  const opts = adminSessionOpts()
+  // Hay que coincidir con path/atributos del Set-Cookie original; si no, el navegador no la quita.
+  store.delete({ name: ADMIN_SESSION, path: opts.path })
+  store.set(ADMIN_SESSION, "", { ...opts, maxAge: 0 })
+  const localeCookie = store.get("NEXT_LOCALE")?.value
+  const locale =
+    localeCookie && routing.locales.includes(localeCookie as (typeof routing.locales)[number])
+      ? localeCookie
+      : routing.defaultLocale
+  redirect(`/${locale}`)
 }

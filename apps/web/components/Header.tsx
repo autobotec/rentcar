@@ -1,6 +1,5 @@
 "use client"
 
-import NextLink from "next/link"
 import { Link, usePathname } from "../app/navigation"
 import { useTranslations, useLocale } from "next-intl"
 
@@ -17,22 +16,26 @@ export function Header() {
 
   return (
     <header
-      className="fixed left-0 right-0 top-0 z-50 border-b border-amber-200/80 bg-amber-50/95 backdrop-blur-md shadow-sm relative"
+      className="fixed left-0 right-0 top-0 z-50 flex h-24 flex-col border-b border-zinc-800 bg-black shadow-md backdrop-blur-md"
       style={{ position: "fixed", top: 0, left: 0, right: 0 }}
     >
-      <div className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+      {/* Fila de navegación */}
+      <div className="relative mx-auto flex h-14 w-full max-w-6xl shrink-0 items-center justify-between px-4">
         <Link href="/" aria-label="Inicio" className="flex items-center">
           <span className="sr-only">Inicio</span>
         </Link>
 
-        <nav className="hidden items-center gap-6 text-sm text-slate-700 md:flex">
-          <Link href="/#fleet" className="font-medium text-teal-700 hover:text-[var(--logo-crimson)]">
+        <nav className="hidden items-center gap-6 text-sm md:flex">
+          <Link
+            href="/#fleet"
+            className="font-medium text-zinc-200 transition hover:text-teal-400"
+          >
             {t("fleet")}
           </Link>
-          <Link href="/#locations" className="font-medium text-teal-700 hover:text-[var(--logo-crimson)]">
-            {t("locations")}
-          </Link>
-          <Link href="/#contact" className="font-medium text-teal-700 hover:text-[var(--logo-crimson)]">
+          <Link
+            href="/contact"
+            className="font-medium text-zinc-200 transition hover:text-teal-400"
+          >
             {t("contact")}
           </Link>
         </nav>
@@ -43,19 +46,16 @@ export function Header() {
                 key={loc.code}
                 href={pathname || "/"}
                 locale={loc.code}
-                className={`rounded px-2 py-1 text-sm ${
+                className={`rounded px-2 py-1 text-sm transition ${
                   locale === loc.code
-                    ? "font-semibold text-[var(--logo-crimson)]"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "font-semibold text-teal-400"
+                    : "text-zinc-400 hover:text-white"
                 }`}
               >
                 {loc.label}
               </Link>
             ))}
           </div>
-          <NextLink href="/admin" className="text-xs text-slate-600 hover:text-[var(--logo-crimson)]">
-            {t("admin")}
-          </NextLink>
           <Link
             href="/my-reservations"
             className="rounded-full px-4 py-1.5 text-xs font-semibold text-white shadow-md transition hover:opacity-95"
@@ -65,6 +65,8 @@ export function Header() {
           </Link>
         </div>
       </div>
+      {/* Franja extra que cubre la parte superior del vídeo (p. ej. marca de agua del export) */}
+      <div className="h-10 w-full shrink-0 bg-black" aria-hidden />
     </header>
   )
 }

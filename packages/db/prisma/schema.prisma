@@ -46,6 +46,8 @@ model Location {
 
 model Vehicle {
   id              String   @id @default(uuid())
+  /** Código legible: MARCA-MODELO-123456 (único; usado en URLs públicas). */
+  publicCode      String?  @unique
   locationId      String?
   brand           String
   model           String

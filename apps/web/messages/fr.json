@@ -7,7 +7,7 @@
     "noImage": "Pas d'image",
     "admin": "Admin",
     "myReservations": "Mes réservations",
-    "fleet": "Flotte",
+    "fleet": "Véhicules",
     "locations": "Emplacements",
     "contact": "Contact",
     "language": "Langue"
@@ -118,5 +118,31 @@
     "noResults": "Aucun véhicule disponible pour les critères sélectionnés.",
     "tryOther": "Essayez d'autres dates, un autre lieu ou retirez des filtres.",
     "newSearch": "Nouvelle recherche"
+  },
+  "contactPage": {
+    "title": "Contact",
+    "intro": "Remplissez le formulaire et nous vous répondrons dès que possible.",
+    "name": "Nom",
+    "email": "E-mail",
+    "phone": "Téléphone (facultatif)",
+    "message": "Message",
+    "submit": "Envoyer le message",
+    "sending": "Envoi…",
+    "success": "Merci. Nous avons bien reçu votre message.",
+    "validationName": "Indiquez votre nom.",
+    "validationEmail": "Indiquez une adresse e-mail valide.",
+    "validationMessage": "Écrivez votre message.",
+    "sendFailed": "Envoi impossible. Réessayez."
+  },
+  "footer": {
+    "offices": "Bureaux",
+    "santoDomingo": "352 Av. Abraham Lincoln, Piantini, Saint-Domingue 10148",
+    "laRomana": "18 Calle Restauración, centre, La Romana 22000",
+    "phoneLabel": "Téléphone",
+    "phoneValue": "+1 (809) 555-0188",
+    "phoneNote": "Numéro d'exemple (fictif).",
+    "contactForm": "Formulaire de contact",
+    "whatsapp": "WhatsApp",
+    "whatsappHint": "Pour le bouton vert : dans apps/web/.env, WHATSAPP_PHONE=18095550123 (ou NEXT_PUBLIC_WHATSAPP_PHONE), puis redémarrez le serveur de dev."
   }
 }

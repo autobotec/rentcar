@@ -5,6 +5,7 @@ import TerminosCompletosAcordeon from "../../../../components/TerminosCompletosA
 
 type Vehicle = {
   id: string
+  publicCode?: string | null
   brand: string
   model: string
   year: number | null
@@ -81,7 +82,8 @@ export default async function VehiclePage({
   const motor = vehicle.engine ?? "—"
   const traccion = vehicle.driveType ?? "—"
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || ""
-  const vehicleUrl = baseUrl ? `${baseUrl}/${locale}/vehicle/${vehicle.id}` : ""
+  const vehicleSlug = vehicle.publicCode || vehicle.id
+  const vehicleUrl = baseUrl ? `${baseUrl}/${locale}/vehicle/${encodeURIComponent(vehicleSlug)}` : ""
 
   const formatTransmission = (x: string) =>
     x === "automatic" ? t("automatic") : x === "manual" ? t("manual") : x.toUpperCase()

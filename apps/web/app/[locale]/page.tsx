@@ -56,7 +56,7 @@ export default async function HomePage({
   }
 
   return (
-    <main className="min-h-screen bg-amber-50/40">
+    <main className="min-h-screen bg-zinc-300 text-slate-900">
 
       {/* 🔥 LOGO GLOBAL (POR ENCIMA DE TODO) */}
       <div className="fixed -top-18 left-6 z-[9999]">
@@ -67,13 +67,19 @@ export default async function HomePage({
         />
       </div>
 
-      {/* HERO */}
-      <section
-        className="relative z-0 min-h-[32rem] bg-cover bg-center bg-no-repeat"
-        style={{
-          backgroundImage: "url(/heropic.jpg)",
-        }}
-      >
+      {/* HERO: vídeo de fondo (autoplay silenciado para cumplir políticas del navegador) */}
+      <section className="relative z-0 min-h-[32rem] overflow-hidden">
+        <video
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden
+        >
+          <source src="/video_hero.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 bg-teal-900/45" aria-hidden />
 
         <div className="relative z-10 mx-auto flex max-w-6xl flex-col gap-10 px-4 py-10 items-end md:justify-end">
@@ -165,19 +171,19 @@ export default async function HomePage({
       </section>
 
       {/* FEATURES */}
-      <section id="locations" className="mx-auto max-w-6xl px-4 py-10">
+      <section id="features" className="mx-auto max-w-6xl px-4 py-10">
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-xl border border-teal-100 border-l-4 border-teal-500 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-teal-100 border-l-4 border-teal-500 bg-white p-4 shadow-[0_10px_36px_-8px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-semibold text-teal-800">{t("flexiblePickup")}</h3>
             <p className="mt-1 text-xs text-slate-600">{t("flexiblePickupDesc")}</p>
           </div>
 
-          <div className="rounded-xl border border-amber-100 border-l-4 border-[var(--logo-crimson)] bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-amber-100 border-l-4 border-[var(--logo-crimson)] bg-white p-4 shadow-[0_10px_36px_-8px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-semibold text-slate-900">{t("transparentPrices")}</h3>
             <p className="mt-1 text-xs text-slate-600">{t("transparentPricesDesc")}</p>
           </div>
 
-          <div className="rounded-xl border border-orange-100 border-l-4 border-orange-500 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-orange-100 border-l-4 border-orange-500 bg-white p-4 shadow-[0_10px_36px_-8px_rgba(0,0,0,0.35)]">
             <h3 className="text-sm font-semibold text-orange-900">{t("supportLanguage")}</h3>
             <p className="mt-1 text-xs text-slate-600">{t("supportLanguageDesc")}</p>
           </div>
@@ -192,7 +198,7 @@ export default async function HomePage({
         </div>
 
         {vehicles.length === 0 ? (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-900">
+          <div className="rounded-xl border border-zinc-400 bg-zinc-100 p-6 text-sm text-zinc-900">
             <p className="font-medium">{t("noVehiclesLoaded")}</p>
           </div>
         ) : (

@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl"
 
 export type VehicleCardData = {
   id: string
+  /** Código legible para URLs (MARCA-MODELO-######); si falta, se usa id (UUID). */
+  publicCode?: string | null
   brand: string
   model: string
   year: number | null
@@ -54,10 +56,11 @@ export function VehicleCard({
   const taxInsurance = (subtotal * taxInsurancePercent) / 100
   const totalEst = subtotal + taxInsurance
   const base = locale ? `/${locale}` : ""
+  const vehicleSlug = vehicle.publicCode || vehicle.id
   const reserveHref =
     hasDates && pickup && dropoff
-      ? `${base}/vehicle/${vehicle.id}?pickup=${encodeURIComponent(pickup)}&dropoff=${encodeURIComponent(dropoff)}`
-      : `${base}/vehicle/${vehicle.id}`
+      ? `${base}/vehicle/${encodeURIComponent(vehicleSlug)}?pickup=${encodeURIComponent(pickup)}&dropoff=${encodeURIComponent(dropoff)}`
+      : `${base}/vehicle/${encodeURIComponent(vehicleSlug)}`
 
   const transmissionLabel =
     vehicle.transmission === "automatic"
@@ -92,7 +95,7 @@ export function VehicleCard({
       : rawImageUrl
 
   return (
-    <article className="flex flex-col overflow-hidden rounded-2xl border border-amber-200/80 bg-white shadow-sm transition hover:shadow-md hover:border-teal-200">
+    <article className="flex flex-col overflow-hidden rounded-2xl border border-amber-200/80 bg-white shadow-[0_10px_40px_-8px_rgba(0,0,0,0.38)] transition hover:border-teal-200 hover:shadow-[0_16px_48px_-8px_rgba(0,0,0,0.48)]">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
         {imageUrl ? (
           <>

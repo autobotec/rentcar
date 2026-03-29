@@ -44,7 +44,7 @@ export default async function ContractPage({
 
   if (!reservation) {
     return (
-      <main className="min-h-screen bg-slate-50 p-8">
+      <main className="min-h-screen p-8">
         <p className="text-red-600">Reserva no encontrada.</p>
         <Link href="/my-reservations" className="mt-4 inline-block text-teal-600 hover:underline">
           Buscar mi reserva

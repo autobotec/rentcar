@@ -1,0 +1,15 @@
+Preguntas frecuentes — EsAnibal Rent Car (ejemplo para el asistente)
+
+Horario de atención: lunes a sábado 8:00–18:00 (hora local RD).
+
+Requisitos para alquilar: licencia de conducir vigente, identificación oficial y tarjeta de crédito para el depósito de garantía según el vehículo.
+
+Seguro: los vehículos incluyen cobertura básica; se pueden ofrecer opciones adicionales según disponibilidad. Consulte condiciones en la reserva.
+
+Kilometraje: política según tarifa y temporada; detalle en el contrato de arrendamiento.
+
+Devolución: el vehículo debe devolverse en la fecha y lugar acordados; cargos adicionales pueden aplicar por retraso según política vigente.
+
+Contacto: use el formulario web, el chat de la página o WhatsApp para dudas generales.
+
+Nota: sustituya o amplíe este archivo con su PDF real (términos, precios, ubicaciones) en esta misma carpeta.

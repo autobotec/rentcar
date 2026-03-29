@@ -84,7 +84,7 @@ export default function ReservationDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center">
         <p className="text-slate-600">Cargando reserva...</p>
       </main>
     )
@@ -92,7 +92,7 @@ export default function ReservationDetailPage() {
 
   if (error && !reservation) {
     return (
-      <main className="min-h-screen bg-slate-50">
+      <main className="min-h-screen">
         <section className="max-w-2xl mx-auto px-4 py-10 text-center">
           <p className="text-red-600 mb-4">{error}</p>
           <Link href="/my-reservations" className="text-teal-600 hover:underline">Buscar otra reserva</Link>
@@ -114,7 +114,7 @@ export default function ReservationDetailPage() {
   const remainingAmount = Math.max(reservation.totalPrice - depositAmount, 0)
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen">
       <section className="max-w-2xl mx-auto px-4 py-10 space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Reserva {reservation.reservationNumber}</h1>

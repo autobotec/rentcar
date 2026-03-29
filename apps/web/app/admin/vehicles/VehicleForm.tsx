@@ -46,17 +46,18 @@ function normalizeImageUrl(url: string): string {
   return url
 }
 
-function validateFile(file: File): string | null {
-  const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "")
-  if (!ALLOWED_EXTENSIONS.includes(ext)) return "Formato no permitido. Use: JPG, PNG, JPEG, WEBP o SVG."
-  if (file.size > MAX_FILE_SIZE) return "Cada foto debe pesar como máximo 4 MB."
-  return null
-}
-
 type ToastState = { type: "success" | "error"; message: string } | null
 
 export function VehicleForm({ locations, initialData }: VehicleFormProps) {
-  const t = useTranslations("adminVehicle")
+  const t = useTranslations("admin.vehicleForm")
+  const tv = useTranslations("vehicleCard")
+
+  function validateFile(file: File): string | null {
+    const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "")
+    if (!ALLOWED_EXTENSIONS.includes(ext)) return t("errorFormat")
+    if (file.size > MAX_FILE_SIZE) return t("errorFileSize")
+    return null
+  }
   const isEdit = !!initialData
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -91,7 +92,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
     e.preventDefault()
     setError(null)
     if (imageCount < MIN_IMAGES) {
-      setError(`Debes agregar al menos ${MIN_IMAGES} foto del vehículo.`)
+      setError(t("minPhotos", { count: MIN_IMAGES }))
       return
     }
     setSaving(true)
@@ -121,7 +122,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
           body: JSON.stringify(payload),
         })
         const data = await res.json()
-        if (!res.ok) throw new Error(data.message || "Error al guardar")
+        if (!res.ok) throw new Error(data.message || t("errorSaveApi"))
         setToast({ type: "success", message: t("toastSuccessSave") })
         setTimeout(() => {
           window.location.href = "/admin/vehicles"
@@ -134,7 +135,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
           body: JSON.stringify(payload),
         })
         const data = await res.json()
-        if (!res.ok) throw new Error(data.message || "Error al crear")
+        if (!res.ok) throw new Error(data.message || t("errorCreateApi"))
         const vehicleId = data.id
         for (let i = 0; i < pendingFiles.length; i++) {
           const { file } = pendingFiles[i]
@@ -142,14 +143,14 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
           fd.append("file", file)
           const uploadRes = await fetch("/api/upload", { method: "POST", body: fd })
           const uploadData = await uploadRes.json()
-          if (!uploadRes.ok) throw new Error(uploadData.error || "Error al subir foto")
+          if (!uploadRes.ok) throw new Error(uploadData.error || t("errorUpload"))
           const url = uploadData.url.startsWith("http") ? uploadData.url : `${window.location.origin}${uploadData.url}`
           const addRes = await fetch(`${API}/vehicles/${vehicleId}/images`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ url, isPrimary: i === 0 }),
           })
-          if (!addRes.ok) throw new Error("Error al asociar foto al vehículo")
+          if (!addRes.ok) throw new Error(t("errorAssociatePhoto"))
         }
         setToast({ type: "success", message: t("toastSuccessCreate") })
         setTimeout(() => {
@@ -158,7 +159,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
         return
       }
     } catch (err: unknown) {
-      const reason = err instanceof Error ? err.message : "Error al guardar"
+      const reason = err instanceof Error ? err.message : t("errorSaveApi")
       setError(reason)
       const errorTitle = isEdit ? t("toastErrorTitle") : t("toastErrorCreateTitle")
       setToast({ type: "error", message: `${errorTitle}: ${reason}` })
@@ -176,12 +177,12 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
 
     const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "")
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
-      setError(`Formato no permitido. Use: JPG, PNG, JPEG, WEBP o SVG.`)
+      setError(t("errorFormat"))
       e.target.value = ""
       return
     }
     if (file.size > MAX_FILE_SIZE) {
-      setError("Cada foto debe pesar como máximo 4 MB.")
+      setError(t("errorFileSize"))
       e.target.value = ""
       return
     }
@@ -195,7 +196,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
         body: formData,
       })
       const uploadData = await uploadRes.json()
-      if (!uploadRes.ok) throw new Error(uploadData.error || "Error al subir")
+      if (!uploadRes.ok) throw new Error(uploadData.error || t("errorUploadGeneric"))
       const url = uploadData.url.startsWith("http") ? uploadData.url : `${window.location.origin}${uploadData.url}`
       const addRes = await fetch(`${API}/vehicles/${initialData.id}/images`, {
         method: "POST",
@@ -203,13 +204,13 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
         body: JSON.stringify({ url, isPrimary: images.length === 0 }),
       })
       const added = await addRes.json()
-      if (!addRes.ok) throw new Error("Error al asociar imagen")
+      if (!addRes.ok) throw new Error(t("errorAssociateImage"))
       setImages((prev) => [
         ...prev,
         { id: added.id, url: normalizeImageUrl(added.url), isPrimary: added.isPrimary },
       ])
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al subir")
+      setError(err instanceof Error ? err.message : t("errorUploadGeneric"))
     } finally {
       setUploading(false)
       e.target.value = ""
@@ -222,10 +223,10 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
       const res = await fetch(`${API}/vehicles/${initialData.id}/images/${imageId}`, {
         method: "DELETE",
       })
-      if (!res.ok) throw new Error("Error al eliminar")
+      if (!res.ok) throw new Error(t("errorDelete"))
       setImages((prev) => prev.filter((i) => i.id !== imageId))
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Error al eliminar imagen")
+      setError(err instanceof Error ? err.message : t("errorDeleteImage"))
     }
   }
 
@@ -264,12 +265,11 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
         <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</div>
       )}
 
-      {/* Datos básicos */}
       <section className="rounded-xl border bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">Datos del vehículo</h2>
+        <h2 className="mb-4 text-lg font-semibold text-slate-900">{t("sectionBasics")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-slate-700">Marca *</label>
+            <label className="block text-sm font-medium text-slate-700">{t("brand")}</label>
             <input
               type="text"
               required
@@ -281,7 +281,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Modelo *</label>
+            <label className="block text-sm font-medium text-slate-700">{t("model")}</label>
             <input
               type="text"
               required
@@ -293,7 +293,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Año</label>
+            <label className="block text-sm font-medium text-slate-700">{t("year")}</label>
             <input
               type="number"
               min="1990"
@@ -304,13 +304,13 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Ubicación</label>
+            <label className="block text-sm font-medium text-slate-700">{t("location")}</label>
             <select
               value={form.locationId}
               onChange={(e) => setForm((f) => ({ ...f, locationId: e.target.value }))}
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
             >
-              <option value="">— Sin asignar —</option>
+              <option value="">{t("locationNone")}</option>
               {locations.map((loc) => (
                 <option key={loc.id} value={loc.id}>
                   {loc.name} {loc.code ? `(${loc.code})` : ""}
@@ -319,31 +319,31 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Transmisión</label>
+            <label className="block text-sm font-medium text-slate-700">{t("transmission")}</label>
             <select
               value={form.transmission}
               onChange={(e) => setForm((f) => ({ ...f, transmission: e.target.value }))}
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
             >
-              <option value="automatic">Automática</option>
-              <option value="manual">Manual</option>
+              <option value="automatic">{tv("automatic")}</option>
+              <option value="manual">{tv("manual")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Combustible</label>
+            <label className="block text-sm font-medium text-slate-700">{t("fuelType")}</label>
             <select
               value={form.fuelType}
               onChange={(e) => setForm((f) => ({ ...f, fuelType: e.target.value }))}
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
             >
-              <option value="gasoline">Gasolina</option>
-              <option value="diesel">Diésel</option>
-              <option value="hybrid">Híbrido</option>
-              <option value="electric">Eléctrico</option>
+              <option value="gasoline">{tv("gasoline")}</option>
+              <option value="diesel">{tv("diesel")}</option>
+              <option value="hybrid">{tv("hybrid")}</option>
+              <option value="electric">{tv("electric")}</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Asientos</label>
+            <label className="block text-sm font-medium text-slate-700">{t("seats")}</label>
             <input
               type="number"
               min="1"
@@ -354,7 +354,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Puertas</label>
+            <label className="block text-sm font-medium text-slate-700">{t("doors")}</label>
             <input
               type="number"
               min="2"
@@ -365,7 +365,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Maletero (piezas)</label>
+            <label className="block text-sm font-medium text-slate-700">{t("luggage")}</label>
             <input
               type="number"
               min="0"
@@ -375,20 +375,20 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Motor (ej. 4.0)</label>
+            <label className="block text-sm font-medium text-slate-700">{t("engine")}</label>
             <input
               type="text"
-              placeholder="—"
+              placeholder={t("enginePlaceholder")}
               value={form.engine}
               onChange={(e) => setForm((f) => ({ ...f, engine: e.target.value }))}
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Tracción</label>
+            <label className="block text-sm font-medium text-slate-700">{t("driveType")}</label>
             <input
               type="text"
-              placeholder="4X4, 4X2…"
+              placeholder={t("drivePlaceholder")}
               value={form.driveType}
               onChange={(e) => setForm((f) => ({ ...f, driveType: e.target.value }))}
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
@@ -403,23 +403,23 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
               className="rounded border-slate-300"
             />
             <label htmlFor="ac" className="text-sm text-slate-700">
-              Aire acondicionado
+              {t("airConditioning")}
             </label>
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-sm font-medium text-slate-700">Estado</label>
+            <label className="block text-sm font-medium text-slate-700">{t("status")}</label>
             <select
               value={form.status}
               onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
               className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
             >
-              <option value="available">Disponible</option>
-              <option value="reserved">Reservado</option>
-              <option value="maintenance">Mantenimiento</option>
+              <option value="available">{t("statusAvailable")}</option>
+              <option value="reserved">{t("statusReserved")}</option>
+              <option value="maintenance">{t("statusMaintenance")}</option>
             </select>
           </div>
           <div className="sm:col-span-2">
-            <label className="block text-sm font-medium text-slate-700">Descripción</label>
+            <label className="block text-sm font-medium text-slate-700">{t("description")}</label>
             <textarea
               rows={3}
               value={form.description}
@@ -430,12 +430,11 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
         </div>
       </section>
 
-      {/* Precio */}
       <section className="rounded-xl border bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold text-slate-900">Precio de alquiler</h2>
+        <h2 className="mb-4 text-lg font-semibold text-slate-900">{t("sectionPrice")}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-slate-700">Precio por día *</label>
+            <label className="block text-sm font-medium text-slate-700">{t("pricePerDay")}</label>
             <input
               type="number"
               min="0"
@@ -447,7 +446,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700">Moneda</label>
+            <label className="block text-sm font-medium text-slate-700">{t("currency")}</label>
             <select
               value={form.currency}
               onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
@@ -461,12 +460,9 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
         </div>
       </section>
 
-      {/* Fotos: mínimo 1, sin límite máximo */}
       <section className="rounded-xl border bg-white p-6 shadow-sm">
-        <h2 className="mb-2 text-lg font-semibold text-slate-900">Fotografías del vehículo</h2>
-        <p className="mb-4 text-sm text-slate-500">
-          Mínimo {MIN_IMAGES} foto. Formatos: JPG, PNG, JPEG, WEBP, SVG. Peso máximo 4 MB por imagen.
-        </p>
+        <h2 className="mb-2 text-lg font-semibold text-slate-900">{t("sectionPhotos")}</h2>
+        <p className="mb-4 text-sm text-slate-500">{t("photosHint", { min: MIN_IMAGES })}</p>
         <div className="mb-4 flex flex-wrap gap-4">
           {isEdit
             ? images.map((img) => (
@@ -485,7 +481,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
                   />
                   {img.isPrimary && (
                     <span className="absolute left-1 top-1 z-20 rounded bg-teal-600 px-1.5 py-0.5 text-[10px] text-white">
-                      Principal
+                      {t("primary")}
                     </span>
                   )}
                   <button
@@ -493,7 +489,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
                     onClick={() => handleRemoveImage(img.id)}
                     className="absolute right-1 top-1 z-20 rounded bg-red-600 px-1.5 py-0.5 text-[10px] text-white hover:bg-red-700"
                   >
-                    Eliminar
+                    {t("remove")}
                   </button>
                 </div>
               ))
@@ -513,7 +509,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
                   />
                   {index === 0 && (
                     <span className="absolute left-1 top-1 z-20 rounded bg-teal-600 px-1.5 py-0.5 text-[10px] text-white">
-                      Principal
+                      {t("primary")}
                     </span>
                   )}
                   <button
@@ -521,7 +517,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
                     onClick={() => handleRemovePendingFile(index)}
                     className="absolute right-1 top-1 z-20 rounded bg-red-600 px-1.5 py-0.5 text-[10px] text-white hover:bg-red-700"
                   >
-                    Eliminar
+                    {t("remove")}
                   </button>
                 </div>
               ))}
@@ -536,7 +532,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
                 disabled={uploading}
                 onChange={handleUpload}
               />
-              {uploading ? "Subiendo…" : "Subir foto"}
+              {uploading ? t("uploading") : t("uploadPhoto")}
             </label>
           ) : (
             <label className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50">
@@ -546,15 +542,13 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
                 className="hidden"
                 onChange={handleAddPendingFile}
               />
-              Agregar foto
+              {t("addPhoto")}
             </label>
           )}
           <span className="text-sm text-slate-500">
-            {imageCount} {imageCount === 1 ? "foto" : "fotos"}
+            {t(imageCount === 1 ? "photoOne" : "photoMany", { count: imageCount })}
             {imageCount < MIN_IMAGES && (
-              <span className="ml-1 text-amber-600">
-                (mínimo {MIN_IMAGES})
-              </span>
+              <span className="ml-1 text-amber-600">{t("minWarning", { min: MIN_IMAGES })}</span>
             )}
           </span>
         </div>
@@ -566,21 +560,21 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
           disabled={saving || !hasEnoughImages}
           className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
         >
-          {saving ? "Guardando…" : isEdit ? "Guardar cambios" : "Crear vehículo"}
+          {saving ? t("saving") : isEdit ? t("saveEdit") : t("createVehicle")}
         </button>
         {isEdit ? (
           <a
             href="/admin/vehicles"
             className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
-            Volver a la lista
+            {t("backList")}
           </a>
         ) : (
           <a
             href="/admin/vehicles"
             className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
-            Cancelar
+            {t("cancel")}
           </a>
         )}
       </div>

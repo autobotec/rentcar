@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useLocale } from "next-intl"
 
@@ -65,7 +65,7 @@ type ReservationResponse = {
   currency: string
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const locale = useLocale()
@@ -186,7 +186,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen">
       <section className="max-w-3xl mx-auto px-4 py-10 space-y-6">
         <header>
           <h1 className="text-2xl font-bold">Confirmar reserva</h1>
@@ -332,5 +332,21 @@ export default function CheckoutPage() {
         )}
       </section>
     </main>
+  )
+}
+
+function CheckoutLoading() {
+  return (
+    <main className="flex min-h-screen items-center justify-center">
+      <p className="text-sm text-slate-600">Cargando checkout…</p>
+    </main>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<CheckoutLoading />}>
+      <CheckoutContent />
+    </Suspense>
   )
 }

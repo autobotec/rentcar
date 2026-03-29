@@ -1,9 +1,10 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 import { useState, useTransition } from "react"
 import { deleteLocation, updateLocation } from "./actions"
-import { LOCATION_TYPES } from "./locationConstants"
+import { LOCATION_TYPE_VALUES } from "./locationConstants"
 
 export type LocationTableRow = {
   id: string
@@ -17,12 +18,20 @@ export type LocationTableRow = {
   longitude: number | null
 }
 
+function isKnownType(t: string): t is (typeof LOCATION_TYPE_VALUES)[number] {
+  return (LOCATION_TYPE_VALUES as readonly string[]).includes(t)
+}
+
 export function LocationsTable({ locations }: { locations: LocationTableRow[] }) {
+  const tl = useTranslations("admin.locations")
   const router = useRouter()
   const [editing, setEditing] = useState<LocationTableRow | null>(null)
   const [formMsg, setFormMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null)
   const [pending, startTransition] = useTransition()
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const typeLabel = (type: string) =>
+    isKnownType(type) ? tl(`type_${type}` as "type_airport") : type
 
   return (
     <>
@@ -30,19 +39,19 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
         <table className="min-w-full text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-600">
             <tr>
-              <th className="px-4 py-3">Nombre</th>
-              <th className="px-4 py-3">Tipo</th>
-              <th className="px-4 py-3">Código</th>
-              <th className="px-4 py-3">Región</th>
-              <th className="px-4 py-3">Dirección</th>
-              <th className="px-4 py-3 text-right">Acciones</th>
+              <th className="px-4 py-3">{tl("colName")}</th>
+              <th className="px-4 py-3">{tl("colType")}</th>
+              <th className="px-4 py-3">{tl("colCode")}</th>
+              <th className="px-4 py-3">{tl("colRegion")}</th>
+              <th className="px-4 py-3">{tl("colAddress")}</th>
+              <th className="px-4 py-3 text-right">{tl("colActions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 text-slate-800">
             {locations.map((loc) => (
               <tr key={loc.id} className="hover:bg-slate-50/80">
                 <td className="px-4 py-3 font-medium">{loc.name}</td>
-                <td className="px-4 py-3 capitalize">{loc.type}</td>
+                <td className="px-4 py-3">{typeLabel(loc.type)}</td>
                 <td className="px-4 py-3 font-mono text-xs text-slate-600">{loc.code ?? "—"}</td>
                 <td className="px-4 py-3 text-slate-600">{loc.region ?? "—"}</td>
                 <td
@@ -60,18 +69,14 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
                     }}
                     className="text-teal-700 hover:underline"
                   >
-                    Editar
+                    {tl("edit")}
                   </button>
                   <span className="mx-2 text-slate-300">|</span>
                   <button
                     type="button"
                     disabled={deletingId === loc.id}
                     onClick={() => {
-                      if (
-                        !window.confirm(
-                          "¿Desactivar esta ubicación? Dejará de mostrarse en el sitio y en los listados (los datos se conservan en la base).",
-                        )
-                      ) {
+                      if (!window.confirm(tl("confirmDelete"))) {
                         return
                       }
                       setDeletingId(loc.id)
@@ -87,7 +92,7 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
                     }}
                     className="text-red-700 hover:underline disabled:opacity-50"
                   >
-                    {deletingId === loc.id ? "…" : "Eliminar"}
+                    {deletingId === loc.id ? tl("deleting") : tl("delete")}
                   </button>
                 </td>
               </tr>
@@ -108,9 +113,11 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
         >
           <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 shadow-xl">
             <h2 id="edit-loc-title" className="text-lg font-semibold text-slate-900">
-              Editar ubicación
+              {tl("editTitle")}
             </h2>
-            <p className="mt-1 text-xs text-slate-600">ID: {editing.id}</p>
+            <p className="mt-1 text-xs text-slate-600">
+              {tl("idLabel")} {editing.id}
+            </p>
 
             {formMsg && (
               <p
@@ -134,7 +141,7 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
                 startTransition(async () => {
                   const r = await updateLocation(editing.id, fd)
                   if (r.ok) {
-                    setFormMsg({ type: "ok", text: "Cambios guardados." })
+                    setFormMsg({ type: "ok", text: tl("savedOk") })
                     router.refresh()
                     setTimeout(() => setEditing(null), 600)
                   } else {
@@ -145,7 +152,7 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
             >
               <div className="sm:col-span-2">
                 <label className="block text-xs font-medium text-slate-700">
-                  Nombre <span className="text-red-600">*</span>
+                  {tl("name")} <span className="text-red-600">{tl("required")}</span>
                 </label>
                 <input
                   name="name"
@@ -156,25 +163,25 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700">Tipo</label>
+                <label className="block text-xs font-medium text-slate-700">{tl("type")}</label>
                 <select
                   name="type"
                   defaultValue={editing.type}
                   className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                 >
-                  {!LOCATION_TYPES.some((t) => t.value === editing.type) ? (
+                  {!isKnownType(editing.type) ? (
                     <option value={editing.type}>{editing.type}</option>
                   ) : null}
-                  {LOCATION_TYPES.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
+                  {LOCATION_TYPE_VALUES.map((v) => (
+                    <option key={v} value={v}>
+                      {tl(`type_${v}` as "type_airport")}
                     </option>
                   ))}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700">Código</label>
+                <label className="block text-xs font-medium text-slate-700">{tl("colCode")}</label>
                 <input
                   name="code"
                   defaultValue={editing.code ?? ""}
@@ -184,7 +191,7 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700">Región</label>
+                <label className="block text-xs font-medium text-slate-700">{tl("colRegion")}</label>
                 <input
                   name="region"
                   defaultValue={editing.region ?? ""}
@@ -193,7 +200,7 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700">País</label>
+                <label className="block text-xs font-medium text-slate-700">{tl("country")}</label>
                 <input
                   name="country"
                   defaultValue={editing.country}
@@ -202,7 +209,7 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-slate-700">Dirección</label>
+                <label className="block text-xs font-medium text-slate-700">{tl("colAddress")}</label>
                 <input
                   name="address"
                   defaultValue={editing.address ?? ""}
@@ -211,27 +218,23 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700">Latitud</label>
+                <label className="block text-xs font-medium text-slate-700">{tl("latitude")}</label>
                 <input
                   name="latitude"
                   type="text"
                   inputMode="decimal"
-                  defaultValue={
-                    editing.latitude != null ? String(editing.latitude) : ""
-                  }
+                  defaultValue={editing.latitude != null ? String(editing.latitude) : ""}
                   className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-700">Longitud</label>
+                <label className="block text-xs font-medium text-slate-700">{tl("longitude")}</label>
                 <input
                   name="longitude"
                   type="text"
                   inputMode="decimal"
-                  defaultValue={
-                    editing.longitude != null ? String(editing.longitude) : ""
-                  }
+                  defaultValue={editing.longitude != null ? String(editing.longitude) : ""}
                   className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
                 />
               </div>
@@ -242,14 +245,14 @@ export function LocationsTable({ locations }: { locations: LocationTableRow[] })
                   disabled={pending}
                   className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-60"
                 >
-                  {pending ? "Guardando…" : "Guardar cambios"}
+                  {pending ? tl("saving") : tl("saveChanges")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setEditing(null)}
                   className="rounded-lg border border-slate-300 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                 >
-                  Cancelar
+                  {tl("cancel")}
                 </button>
               </div>
             </form>

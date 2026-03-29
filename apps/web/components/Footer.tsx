@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server"
 import { Link } from "../app/navigation"
 import { getWhatsAppHref } from "../lib/whatsapp"
 import { WhatsAppOfficialButton } from "./WhatsAppOfficialButton"
+import { FooterAssistantLink } from "./FooterAssistantLink"
 
 export async function Footer() {
   const t = await getTranslations("common")
@@ -44,6 +45,7 @@ export async function Footer() {
             ) : (
               <p className="max-w-xs text-xs text-slate-500">{tf("whatsappHint")}</p>
             )}
+            <FooterAssistantLink className="inline-flex rounded-full border border-violet-500/50 px-4 py-2 text-sm font-medium text-violet-300 transition hover:border-violet-400 hover:bg-violet-950/40" />
           </div>
         </div>
 

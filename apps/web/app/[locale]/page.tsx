@@ -46,7 +46,6 @@ export default async function HomePage({
   const { locale } = await params
   const sp = await searchParams
   const t = await getTranslations("home")
-  const tCommon = await getTranslations("common")
 
   let vehicles: Vehicle[] = []
   try {
@@ -56,19 +55,9 @@ export default async function HomePage({
   }
 
   return (
-    <main className="min-h-screen bg-zinc-300 text-slate-900">
-
-      {/* 🔥 LOGO GLOBAL (POR ENCIMA DE TODO) */}
-      <div className="fixed -top-18 left-6 z-[9999]">
-        <img
-          src="/logo.png"
-          alt="EsAnibal RENT CAR"
-          className="w-44 object-contain drop-shadow-2xl transition-transform duration-300 hover:scale-105"
-        />
-      </div>
-
-      {/* HERO: vídeo de fondo (autoplay silenciado para cumplir políticas del navegador) */}
-      <section className="relative z-0 min-h-[32rem] overflow-hidden">
+    <main className="min-h-screen text-slate-900">
+      {/* HERO: solo vídeo; bg-black evita que se vea la imagen global detrás */}
+      <section className="relative z-0 min-h-[32rem] overflow-hidden bg-black">
         <video
           className="pointer-events-none absolute inset-0 h-full w-full object-cover"
           autoPlay

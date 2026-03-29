@@ -3,6 +3,7 @@
 import { useParams, useSearchParams, useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { FloatingBrandLogoStandalone } from "../../../../components/FloatingBrandLogoStandalone"
 import { CardElement, Elements, useElements, useStripe } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
 
@@ -219,8 +220,11 @@ export default function ReservationPaymentPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-600">Cargando...</p>
+      <main className="flex min-h-screen flex-col bg-slate-50">
+        <FloatingBrandLogoStandalone />
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-slate-600">Cargando...</p>
+        </div>
       </main>
     )
   }
@@ -228,6 +232,7 @@ export default function ReservationPaymentPage() {
   if (error && !details) {
     return (
       <main className="min-h-screen bg-slate-50">
+        <FloatingBrandLogoStandalone />
         <section className="max-w-md mx-auto px-4 py-10 text-center">
           <p className="text-red-600 mb-4">{error}</p>
           <Link href={reservationId ? `/reservation/${reservationId}` : "/my-reservations"} className="text-teal-600 hover:underline">
@@ -240,6 +245,7 @@ export default function ReservationPaymentPage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
+      <FloatingBrandLogoStandalone />
       <section className="max-w-md mx-auto px-4 py-10">
         <h1 className="text-xl font-bold mb-2">Completar pago</h1>
         <p className="text-sm text-slate-600 mb-6">

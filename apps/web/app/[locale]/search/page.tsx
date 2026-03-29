@@ -92,7 +92,7 @@ export default async function SearchPage({
   const hasDates = days > 0
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen">
       <section className="max-w-5xl mx-auto px-4 py-10">
         <header className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>

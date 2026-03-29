@@ -103,7 +103,7 @@ export default async function VehiclePage({
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen">
       {vehicleUrl ? (
         <ProductJsonLd
           name={`${vehicle.brand} ${vehicle.model}${vehicle.year ? ` ${vehicle.year}` : ""}`}

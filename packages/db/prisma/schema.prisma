@@ -67,11 +67,34 @@ model Vehicle {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  location       Location?             @relation(fields: [locationId], references: [id])
+  location       Location?                   @relation(fields: [locationId], references: [id])
   images         VehicleImage[]
   prices         Price[]
   reservations   Reservation[]
   translations   VehicleTranslation[]
+  maintenance    VehicleMaintenanceRecord[]
+}
+
+/** Historial de mantenimiento y gastos del vehículo (km, categoría, monto). */
+model VehicleMaintenanceRecord {
+  id           String   @id @default(uuid())
+  vehicleId    String
+  performedAt  DateTime @default(now())
+  /** Odómetro en km en la fecha del registro (opcional). */
+  mileageKm    Int?
+  /** oil_change | brakes | cleaning | parts | taxes | insurance | tires | battery | inspection | other */
+  category     String
+  title        String?
+  description  String?
+  amount       Float    @default(0)
+  currency     String   @default("USD")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  @@index([vehicleId])
+  @@index([performedAt])
 }
 
 model VehicleTranslation {

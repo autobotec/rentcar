@@ -7,7 +7,7 @@ export default async function ContactPage() {
   const tCommon = await getTranslations("common")
 
   return (
-    <main className="min-h-screen bg-zinc-300 px-4 py-10 text-slate-900">
+    <main className="min-h-screen px-4 py-10 text-slate-900">
       <div className="mx-auto max-w-3xl text-center">
         <h1 className="text-3xl font-bold text-slate-900">{t("title")}</h1>
         <p className="mt-2 text-sm text-slate-600">{t("intro")}</p>

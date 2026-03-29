@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
+import { FloatingBrandLogoStandalone } from "../../components/FloatingBrandLogoStandalone"
 
 function PayNowButton({ reservationId, provider }: { reservationId: string; provider: "stripe" | "paypal" }) {
   const router = useRouter()
@@ -57,7 +58,7 @@ type ReservationResponse = {
   currency: string
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
 
@@ -166,8 +167,9 @@ export default function CheckoutPage() {
 
   if (!vehicleId || !pickup || !dropoff) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
+      <main className="min-h-screen flex flex-col justify-center">
+        <FloatingBrandLogoStandalone />
+        <div className="flex flex-1 flex-col items-center justify-center text-center">
           <p className="mb-2">Faltan datos de la reserva.</p>
           <button
             className="rounded-md bg-teal-600 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-700"
@@ -182,6 +184,7 @@ export default function CheckoutPage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
+      <FloatingBrandLogoStandalone />
       <section className="max-w-3xl mx-auto px-4 py-10 space-y-6">
         <header>
           <h1 className="text-2xl font-bold">Confirmar reserva</h1>
@@ -360,3 +363,21 @@ export default function CheckoutPage() {
   )
 }
 
+function CheckoutLoading() {
+  return (
+    <main className="flex min-h-screen flex-col bg-slate-50">
+      <FloatingBrandLogoStandalone />
+      <div className="flex flex-1 items-center justify-center">
+        <p className="text-sm text-slate-600">Cargando checkout…</p>
+      </div>
+    </main>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={<CheckoutLoading />}>
+      <CheckoutContent />
+    </Suspense>
+  )
+}

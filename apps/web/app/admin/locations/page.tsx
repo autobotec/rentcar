@@ -1,3 +1,5 @@
+import { getTranslations } from "next-intl/server"
+import { AdminPageHeading } from "../../../components/AdminPageHeading"
 import { getLocations } from "../vehicles/actions"
 import { AddLocationForm } from "./AddLocationForm"
 import { LocationsTable } from "./LocationsTable"
@@ -16,19 +18,18 @@ type LocationRow = {
 
 export default async function AdminLocationsPage() {
   const raw = (await getLocations()) as LocationRow[]
+  const t = await getTranslations("admin.locations")
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-slate-900">Ubicaciones</h1>
-      <p className="mt-1 text-sm text-slate-600">
-        Sucursales y puntos de servicio. Puedes registrar nuevas ubicaciones aquí; se guardan en la base de datos vía API.
-      </p>
+    <div className="text-right">
+      <AdminPageHeading>{t("title")}</AdminPageHeading>
+      <p className="mt-1 text-sm text-slate-600">{t("intro")}</p>
 
       <AddLocationForm />
 
       {raw.length === 0 ? (
         <p className="mt-8 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          No se cargaron ubicaciones. Comprueba que la API esté en marcha.
+          {t("emptyWarn")}
         </p>
       ) : (
         <LocationsTable

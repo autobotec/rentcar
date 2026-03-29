@@ -32,7 +32,7 @@ export default function MyReservationsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen">
       <section className="max-w-md mx-auto px-4 py-10">
         <h1 className="text-2xl font-bold mb-2">Mis reservas</h1>
         <p className="text-sm text-slate-600 mb-6">

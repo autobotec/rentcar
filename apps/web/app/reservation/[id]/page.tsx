@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
+import { FloatingBrandLogoStandalone } from "../../../components/FloatingBrandLogoStandalone"
 
 type Reservation = {
   id: string
@@ -83,8 +84,11 @@ export default function ReservationDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-600">Cargando reserva...</p>
+      <main className="flex min-h-screen flex-col bg-slate-50">
+        <FloatingBrandLogoStandalone />
+        <div className="flex flex-1 items-center justify-center">
+          <p className="text-slate-600">Cargando reserva...</p>
+        </div>
       </main>
     )
   }
@@ -92,6 +96,7 @@ export default function ReservationDetailPage() {
   if (error && !reservation) {
     return (
       <main className="min-h-screen bg-slate-50">
+        <FloatingBrandLogoStandalone />
         <section className="max-w-2xl mx-auto px-4 py-10 text-center">
           <p className="text-red-600 mb-4">{error}</p>
           <Link href="/my-reservations" className="text-teal-600 hover:underline">Buscar otra reserva</Link>
@@ -108,6 +113,7 @@ export default function ReservationDetailPage() {
 
   return (
     <main className="min-h-screen bg-slate-50">
+      <FloatingBrandLogoStandalone />
       <section className="max-w-2xl mx-auto px-4 py-10 space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold">Reserva {reservation.reservationNumber}</h1>

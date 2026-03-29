@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { FloatingBrandLogoRsc } from "../../../../components/FloatingBrandLogoRsc"
 import { ContractActions } from "./ContractActions"
 
 type Reservation = {
@@ -45,6 +46,7 @@ export default async function ContractPage({
   if (!reservation) {
     return (
       <main className="min-h-screen bg-slate-50 p-8">
+        <FloatingBrandLogoRsc />
         <p className="text-red-600">Reserva no encontrada.</p>
         <Link href="/my-reservations" className="mt-4 inline-block text-teal-600 hover:underline">
           Buscar mi reserva
@@ -59,6 +61,7 @@ export default async function ContractPage({
 
   return (
     <main className="min-h-screen bg-white p-6 md:p-10 print:p-6">
+      <FloatingBrandLogoRsc />
       <div className="max-w-3xl mx-auto">
         <h1 className="text-2xl font-bold border-b pb-2 mb-6">Contrato de alquiler</h1>
 

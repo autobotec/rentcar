@@ -1,5 +1,6 @@
 "use client"
 
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 
 const LOCALES = [
@@ -9,6 +10,7 @@ const LOCALES = [
 ] as const
 
 export function AdminLocaleSwitcher({ currentLocale }: { currentLocale: string }) {
+  const t = useTranslations("common")
   const router = useRouter()
 
   function setLocale(code: string) {
@@ -17,7 +19,7 @@ export function AdminLocaleSwitcher({ currentLocale }: { currentLocale: string }
   }
 
   return (
-    <div className="flex items-center gap-1" role="group" aria-label="Idioma">
+    <div className="flex items-center gap-1" role="group" aria-label={t("language")}>
       {LOCALES.map((loc) => (
         <button
           key={loc.code}
@@ -25,8 +27,8 @@ export function AdminLocaleSwitcher({ currentLocale }: { currentLocale: string }
           onClick={() => setLocale(loc.code)}
           className={`rounded px-2 py-1 text-sm ${
             currentLocale === loc.code
-              ? "font-semibold text-teal-700"
-              : "text-slate-500 hover:text-slate-800"
+              ? "font-semibold text-teal-400"
+              : "text-zinc-400 hover:text-white"
           }`}
         >
           {loc.label}

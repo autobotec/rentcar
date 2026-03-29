@@ -1,4 +1,6 @@
 import Link from "next/link"
+import { getTranslations } from "next-intl/server"
+import { AdminPageHeading } from "../../../../components/AdminPageHeading"
 import { getLocations } from "../actions"
 import { VehicleForm } from "../VehicleForm"
 
@@ -16,6 +18,7 @@ export default async function EditVehiclePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+  const t = await getTranslations("admin.vehicles")
   const [vehicle, locations] = await Promise.all([
     getVehicle(id),
     getLocations(),
@@ -23,25 +26,25 @@ export default async function EditVehiclePage({
   if (!vehicle) {
     return (
       <div className="space-y-4">
-        <p className="text-slate-600">Vehículo no encontrado.</p>
+        <p className="text-slate-600">{t("notFound")}</p>
         <Link href="/admin/vehicles" className="text-teal-600 hover:underline">
-          Volver a la lista
+          {t("backList")}
         </Link>
       </div>
     )
   }
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col items-end gap-2 text-right">
+        <AdminPageHeading>
+          {t("editTitle", { brand: vehicle.brand, model: vehicle.model })}
+        </AdminPageHeading>
         <Link
           href="/admin/vehicles"
           className="text-sm text-slate-500 hover:text-slate-700"
         >
-          ← Vehículos
+          {t("backVehicles")}
         </Link>
-        <h1 className="text-2xl font-bold text-slate-900">
-          Editar: {vehicle.brand} {vehicle.model}
-        </h1>
       </div>
       <VehicleForm locations={locations} initialData={vehicle} />
     </div>

@@ -86,7 +86,7 @@ export function VehicleCard({
     vehicle.airConditioning !== false ? "A/C" : null,
   ].filter(Boolean)
 
-  // Normalizar URL de imagen: si viene con host (ej. http://localhost:3001/uploads/...)
+  // Normalizar URL de imagen: si viene con host (ej. http://localhost:4106/uploads/...)
   // extraemos siempre el path a partir de /uploads/ para que funcione en cualquier host.
   const rawImageUrl = vehicle.images && vehicle.images.length > 0 ? vehicle.images[0].url : null
   const imageUrl =

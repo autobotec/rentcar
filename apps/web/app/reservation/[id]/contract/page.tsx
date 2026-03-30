@@ -23,7 +23,7 @@ type Reservation = {
 }
 
 async function getReservation(id: string): Promise<Reservation | null> {
-  const baseUrl = process.env.API_BASE_URL || "http://localhost:4100/api"
+  const baseUrl = process.env.API_BASE_URL || "http://localhost:4106/api"
   const res = await fetch(`${baseUrl}/reservations/${id}`, { cache: "no-store" })
   if (!res.ok) return null
   const text = await res.text()

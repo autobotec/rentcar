@@ -26,7 +26,7 @@ type Vehicle = {
 }
 
 async function getVehicle(id: string, locale?: string): Promise<Vehicle | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4100/api"
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4106/api"
   const url = new URL(`${baseUrl}/vehicles/${id}`)
   if (locale) url.searchParams.set("locale", locale)
   const res = await fetch(url.toString(), { cache: "no-store" })

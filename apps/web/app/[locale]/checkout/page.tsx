@@ -13,7 +13,7 @@ function PayNowButton({
   locale: string
   provider: "stripe" | "paypal"
 }) {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4100/api"
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4106/api"
   const [loading, setLoading] = useState(false)
   const handlePay = async () => {
     setLoading(true)
@@ -74,7 +74,7 @@ function CheckoutContent() {
   const pickup = searchParams.get("pickup")
   const dropoff = searchParams.get("dropoff")
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4100/api"
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4106/api"
   const [extras, setExtras] = useState<Extra[]>([])
   const [selectedExtras, setSelectedExtras] = useState<{ extraId: string; quantity: number }[]>([])
   const [quote, setQuote] = useState<QuoteResponse | null>(null)

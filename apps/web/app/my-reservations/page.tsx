@@ -11,7 +11,7 @@ export default function MyReservationsPage() {
   const [reservationNumber, setReservationNumber] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4100/api"
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4106/api"
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

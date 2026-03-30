@@ -6,7 +6,7 @@ import { useState } from "react"
 import type { MaintenanceRecord } from "../actions"
 import { dateLocaleTag } from "../../../../lib/dateLocaleTag"
 
-const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4100/api"
+const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4106/api"
 
 const CATEGORY_VALUES = [
   "oil_change",

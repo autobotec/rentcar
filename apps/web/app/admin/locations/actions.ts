@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache"
 
 async function getApiBaseUrl() {
-  return process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4100/api"
+  return process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4106/api"
 }
 
 export async function createLocation(formData: FormData) {

@@ -43,7 +43,7 @@ function getDays(pickup: string, dropoff: string): number {
 const TAX_INSURANCE_PERCENT = 15
 
 async function getVehicles(params: SearchParams & { locale?: string }): Promise<Vehicle[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4100/api"
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4106/api"
   const url = new URL(`${baseUrl}/vehicles`)
   if (params.locationCode) url.searchParams.set("locationCode", params.locationCode)
   if (params.locale) url.searchParams.set("locale", params.locale)

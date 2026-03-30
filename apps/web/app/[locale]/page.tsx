@@ -21,7 +21,7 @@ type Vehicle = {
 }
 
 async function getVehicles(locationCode?: string, locale?: string): Promise<Vehicle[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4100/api"
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4106/api"
   const url = new URL(`${baseUrl}/vehicles`)
   if (locationCode) url.searchParams.set("locationCode", locationCode)
   if (locale) url.searchParams.set("locale", locale)

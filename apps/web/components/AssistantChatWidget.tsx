@@ -9,7 +9,7 @@ type Msg = { role: "user" | "assistant"; content: string }
 function apiBase() {
   return (
     (typeof process !== "undefined" && process.env.NEXT_PUBLIC_API_BASE_URL) ||
-    "http://localhost:4100/api"
+    "http://localhost:4106/api"
   )
 }
 

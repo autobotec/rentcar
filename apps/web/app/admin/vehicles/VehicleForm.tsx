@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Toast } from "../../../components/Toast"
 
-const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4100/api"
+const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4106/api"
 const MIN_IMAGES = 1
 const MAX_IMAGES = 100 // sin límite práctico; mínimo 1
 const MAX_FILE_SIZE = 4 * 1024 * 1024 // 4 MB

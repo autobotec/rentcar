@@ -174,7 +174,7 @@ export default function ReservationPaymentPage() {
   const reservationId = params?.id as string
   const paymentId = searchParams?.get("paymentId")
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4100/api"
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4106/api"
   const [details, setDetails] = useState<PaymentDetails | null>(null)
   const [loading, setLoading] = useState(!!paymentId)
   const [confirming, setConfirming] = useState(false)

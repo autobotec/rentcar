@@ -4,7 +4,7 @@ import { AdminPageHeading } from "../../../../components/AdminPageHeading"
 import { dateLocaleTag } from "../../../../lib/dateLocaleTag"
 import { AdminReservationDetail } from "./AdminReservationDetail"
 
-const API = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4100/api"
+const API = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4106/api"
 
 async function getReservation(id: string) {
   const res = await fetch(`${API}/reservations/${id}`, { cache: "no-store" })

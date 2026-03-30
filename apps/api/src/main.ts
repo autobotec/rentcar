@@ -24,17 +24,15 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'http://127.0.0.1:3000',
-      'http://127.0.0.1:3001',
+      'http://localhost:3006',
+      'http://127.0.0.1:3006',
       ...extraOrigins,
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   })
 
-  const port = process.env.API_PORT ? Number(process.env.API_PORT) : 4100
+  const port = process.env.API_PORT ? Number(process.env.API_PORT) : 4106
   await app.listen(port)
   console.log(`API listening on http://localhost:${port}/api`)
 }

@@ -24,7 +24,7 @@ export default function ReservationDetailPage() {
   const params = useParams()
   const id = params?.id as string
   const locale = (params?.locale as string) || "es"
-  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4100/api"
+  const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL || "http://localhost:4106/api"
   const [reservation, setReservation] = useState<Reservation | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

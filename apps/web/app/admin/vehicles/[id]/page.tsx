@@ -4,7 +4,7 @@ import { AdminPageHeading } from "../../../../components/AdminPageHeading"
 import { getLocations } from "../actions"
 import { VehicleForm } from "../VehicleForm"
 
-const API = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4100/api"
+const API = process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4106/api"
 
 async function getVehicle(id: string) {
   const res = await fetch(`${API}/vehicles/${id}`, { cache: "no-store" })

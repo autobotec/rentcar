@@ -4,7 +4,7 @@ Esta guia deja el proyecto desplegado en produccion y configurado para actualiza
 
 ## 1) Arquitectura recomendada
 
-- `app.tudominio.com` -> Next.js (`apps/web`) en puerto `3006`
+- `app.tudominio.com` -> Next.js (`apps/web`) en puerto `3003`
 - `api.tudominio.com` -> NestJS (`apps/api`) en puerto `4106`
 - CyberPanel/OpenLiteSpeed actua como reverse proxy para ambos dominios.
 - PM2 mantiene ambos procesos vivos.
@@ -107,7 +107,7 @@ Desde la raiz del proyecto:
 ```bash
 cd /var/www/rentacar
 pm2 start "npm --workspace api run start" --name rentacar-api
-pm2 start "npm --workspace web run start -- -p 3006" --name rentacar-web
+pm2 start "npm --workspace web run start -- -p 3003" --name rentacar-web
 pm2 save
 pm2 startup
 ```
@@ -116,7 +116,7 @@ Verificar:
 
 ```bash
 pm2 status
-curl -I http://127.0.0.1:3006
+curl -I http://127.0.0.1:3003
 curl -I http://127.0.0.1:4106/api
 ```
 
@@ -129,7 +129,7 @@ En CyberPanel:
 3. En cada sitio, emite SSL (Let's Encrypt).
 4. Agrega reglas de proxy en OpenLiteSpeed:
 
-- Para `app.tudominio.com` proxy a `http://127.0.0.1:3006`
+- Para `app.tudominio.com` proxy a `http://127.0.0.1:3003`
 - Para `api.tudominio.com` proxy a `http://127.0.0.1:4106`
 
 Si deseas que el backend conserve prefijo `/api`, deja Nest como esta (ya usa `setGlobalPrefix('api')`), por ejemplo:

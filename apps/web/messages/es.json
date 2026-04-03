@@ -146,9 +146,9 @@
   "footer": {
     "offices": "Oficinas",
     "santoDomingo": "Av. Abraham Lincoln 352, Piantini, Santo Domingo 10148",
-    "laRomana": "Calle Restauración 18, centro, La Romana 22000",
+    "laRomana": "trinitaria 45 Centro",
     "phoneLabel": "Teléfono",
-    "phoneValue": "+1 (809) 555-0188",
+    "phoneValue": "+1(849)8515436",
     "phoneNote": "Número de ejemplo (no es una línea real).",
     "contactForm": "Formulario de contacto",
     "whatsapp": "WhatsApp",
@@ -399,6 +399,10 @@
       "createVehicle": "Crear vehículo",
       "backList": "Volver a la lista",
       "cancel": "Cancelar",
+      "delete": "Eliminar vehículo",
+      "deleting": "Eliminando...",
+      "confirmDelete": "¿Está seguro de que desea eliminar este vehículo? Todas sus reservas podrían verse afectadas.",
+      "toastSuccessDelete": "Vehículo eliminado correctamente.",
       "statusAvailable": "Disponible",
       "statusReserved": "Reservado",
       "statusMaintenance": "Mantenimiento"

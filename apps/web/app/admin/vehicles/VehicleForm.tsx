@@ -60,6 +60,7 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
   }
   const isEdit = !!initialData
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [toast, setToast] = useState<ToastState>(null)
@@ -168,12 +169,36 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
     }
   }
 
+  const handleDelete = async () => {
+    if (!isEdit || !initialData) return
+    const confirm = window.confirm(t("confirmDelete"))
+    if (!confirm) return
+    
+    setDeleting(true)
+    try {
+      const res = await fetch(`${API}/vehicles/${initialData.id}`, {
+        method: "DELETE",
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        throw new Error(data.message || t("errorDelete"))
+      }
+      setToast({ type: "success", message: t("toastSuccessDelete") })
+      setTimeout(() => {
+        window.location.href = "/admin/vehicles"
+      }, 1500)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : t("errorDelete"))
+      setToast({ type: "error", message: `${t("toastErrorTitle")}: ${err instanceof Error ? err.message : t("errorDelete")}` })
+      setDeleting(false)
+    }
+  }
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isEdit || !initialData) return
     const file = e.target.files?.[0]
     if (!file) return
     setError(null)
-
 
     const ext = "." + (file.name.split(".").pop()?.toLowerCase() ?? "")
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
@@ -557,18 +582,28 @@ export function VehicleForm({ locations, initialData }: VehicleFormProps) {
       <div className="flex gap-3">
         <button
           type="submit"
-          disabled={saving || !hasEnoughImages}
+          disabled={saving || deleting || !hasEnoughImages}
           className="rounded-md bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
         >
           {saving ? t("saving") : isEdit ? t("saveEdit") : t("createVehicle")}
         </button>
         {isEdit ? (
-          <a
-            href="/admin/vehicles"
-            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
-            {t("backList")}
-          </a>
+          <>
+            <a
+              href="/admin/vehicles"
+              className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            >
+              {t("backList")}
+            </a>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={saving || deleting}
+              className="ml-auto rounded-md border border-red-300 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
+            >
+              {deleting ? t("deleting") : t("delete")}
+            </button>
+          </>
         ) : (
           <a
             href="/admin/vehicles"

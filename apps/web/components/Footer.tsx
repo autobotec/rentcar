@@ -19,11 +19,7 @@ export async function Footer() {
         <div className="grid gap-8 text-sm md:grid-cols-3 md:gap-6 md:text-left">
           <div>
             <p className="font-semibold text-white">{tf("offices")}</p>
-            <p className="mt-2 leading-relaxed text-slate-400">
-              <span className="block font-medium text-slate-300">Santo Domingo</span>
-              {tf("santoDomingo")}
-            </p>
-            <p className="mt-3 leading-relaxed text-slate-400">
+            <p className="mt-4 leading-relaxed text-slate-400">
               <span className="block font-medium text-slate-300">La Romana</span>
               {tf("laRomana")}
             </p>
@@ -31,7 +27,6 @@ export async function Footer() {
           <div>
             <p className="font-semibold text-white">{tf("phoneLabel")}</p>
             <p className="mt-2 text-lg font-mono text-slate-200">{tf("phoneValue")}</p>
-            <p className="mt-4 text-xs text-slate-500">{tf("phoneNote")}</p>
           </div>
           <div className="flex flex-col items-start gap-3">
             <Link

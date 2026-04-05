@@ -12,8 +12,13 @@ loadEnvConfig(__dirname)
 
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
 
-const API_URL =
+// API_BASE_URL: llamada interna server-side (nunca sale del servidor)
+const SERVER_API_URL =
   process.env.API_BASE_URL ||
+  "http://localhost:4106/api"
+
+// NEXT_PUBLIC_API_BASE_URL: lo que usa el navegador del cliente (URL pública)
+const PUBLIC_API_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ||
   "http://localhost:4106/api"
 
@@ -21,8 +26,8 @@ const API_URL =
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    NEXT_PUBLIC_API_BASE_URL: API_URL,
-    API_BASE_URL: API_URL,
+    API_BASE_URL: SERVER_API_URL,
+    NEXT_PUBLIC_API_BASE_URL: PUBLIC_API_URL,
   },
   images: {
     remotePatterns: [
@@ -46,6 +51,11 @@ const nextConfig = {
         protocol: "http",
         hostname: "localhost",
         pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "www.esanibalrentcar.com",
+        pathname: "/uploads/**",
       },
     ],
   },
